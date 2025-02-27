@@ -1,0 +1,32 @@
+/* 基础样式重置 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.el-header {
+  padding: 0 !important;
+}
+
+.el-table {
+  margin-top: 16px;
+}
+
+.el-pagination {
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+/* 使用CSS变量 */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.el-menu {
+  border-right: 1px solid var(--border-color);
+}
+
+.el-card {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
