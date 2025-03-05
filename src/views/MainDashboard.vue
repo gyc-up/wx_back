@@ -6,9 +6,11 @@
           <div class="flex items-center justify-between">
             <div>
               <div class="text-gray-500">总用户数</div>
-              <div class="text-2xl font-bold mt-2">1,234</div>
+              <div class="text-2xl font-bold mt-2">{{ sumUserNumber }}</div>
             </div>
-            <el-icon class="text-blue-500" :size="40"><user /></el-icon>
+            <el-icon class="text-blue-500" :size="40">
+              <user />
+            </el-icon>
           </div>
         </el-card>
       </el-col>
@@ -25,16 +27,33 @@
 </template>
 
 <script setup>
-import { User } from '@element-plus/icons-vue'
+import { ref } from 'vue'
 import * as echarts from 'echarts'
-import { onMounted } from 'vue'
+import { getGround } from '@/api'
 
-onMounted(() => {
+const sumUserNumber = ref(0)
+const dailyList = ref([])
+
+// 异步获取数据并渲染图表
+let getGroundData = async () => {
+  let response = (await getGround()).data
+  sumUserNumber.value = response.data.count
+  dailyList.value = response.data.dailyViewing
+  renderChart(dailyList.value)
+}
+getGroundData()
+const renderChart = (dailyData) => {
   const chart = echarts.init(document.getElementById('chart-container'))
   chart.setOption({
-    xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+    xAxis: {
+      type: 'category',
+      data: dailyData.map(item => new Date(item.viewData).toLocaleDateString()) // 格式化日期
+    },
     yAxis: { type: 'value' },
-    series: [{ data: [820, 932, 901, 934, 1290, 1330, 1320], type: 'line' }]
+    series: [{
+      data: dailyData.map(item => item.viewNum),
+      type: 'line'
+    }]
   })
-})
+}
 </script>

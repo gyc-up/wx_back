@@ -1,6 +1,6 @@
 <template>
   <div :xl="6" :lg="7" class="bg-login">
-    
+
     <!--标题-->
     <el-row type="flex" class="row-bg row-two" justify="center" align="middle">
       <el-col :span="6"></el-col>
@@ -21,9 +21,6 @@
           <el-form-item label="密码" prop="password">
             <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
           </el-form-item>
-          <el-form-item label="验证码" prop="code">
-            <el-input v-model="loginForm.code" placeholder="请输入验证码"></el-input>
-          </el-form-item>
           <el-form-item label="记住密码" prop="remember">
             <el-switch v-model="loginForm.remember"></el-switch>
           </el-form-item>
@@ -32,7 +29,7 @@
             <el-button @click="resetForm">重置</el-button>
           </el-form-item>
         </el-form>
-      
+
       </el-col>
     </el-row>
   </div>
@@ -40,55 +37,53 @@
 
 <script setup>
 import { ref } from 'vue';
+import { login } from '../api/login.js';
+import { useRouter } from 'vue-router';
+const router = useRouter()
+const loginForm = ref({
+  username: '',
+  password: '',
+  code: '',
+  remember: false,
+  codeToken: ''
+});
 
 
-    const loginForm = ref({
-      username: '',
-      password: '',
-      code: '',
-      remember: false,
-      codeToken: ''
-    });
 
 
 
+const submitForm = async () => {
+  await login({ userId: loginForm.value.username, userPassword: loginForm.value.password }).then((res) => {
+    console.log(res.data)
+    if (res.data.code === 1) {
+      router.push({ path: '/mainDashboard' })
+    }
+    else
+      console.log('失败')
+  })
+};
 
+const resetForm = () => {
+  // 重置表单逻辑
 
-    const submitForm = () => {
-     
-      // 表单验证逻辑
-      // ... existing validation logic ...
-      if (loginForm.value.username === 'admin' && loginForm.value.password === '123456') {
-        // 表单验证成功，跳转到首页
-        this.$router.push({ path: '/' }); // 添加此行代码
-        alert('submit');
-      } else {
-        console.log('error submit!!');
-        return false;
-      }
-    };
-
-    const resetForm = () => {
-      // 重置表单逻辑
-      
-    };
+};
 
 
 </script>
 
 <style scoped>
 .codeImg {
- 
+
   float: right;
- 
+
   border-radius: 3px;
- 
+
   width: 26%;
 }
 
 .bg-login {
   height: 100%;
-  background :#5f565e;
+  background: #5f565e;
   background-size: 50%;
 
 }
