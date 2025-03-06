@@ -16,10 +16,10 @@ export const getGround = () => {
     })
 }
 
-export const disableUser = (data) => {
+export const disableUser = (params) => {
     return request({
         url: '/admin/updateUser',
         method: 'get',
-      data,
+      params,
     })
 }

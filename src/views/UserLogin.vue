@@ -39,7 +39,12 @@
 import { ref } from 'vue';
 import { login } from '../api/login.js';
 import { useRouter } from 'vue-router';
-const router = useRouter()
+import { useStore } from 'vuex';  // 引入 useStore
+
+// 初始化 vue-router
+const router = useRouter();
+
+// 初始化 loginForm 响应式数据
 const loginForm = ref({
   username: '',
   password: '',
@@ -48,36 +53,50 @@ const loginForm = ref({
   codeToken: ''
 });
 
+// 使用 Vuex store
+const store = useStore();
 
-
-
-
+// 登录表单提交
 const submitForm = async () => {
-  await login({ userId: loginForm.value.username, userPassword: loginForm.value.password }).then((res) => {
-    console.log(res.data)
+  try {
+    const res = await login({
+      userId: loginForm.value.username,
+      userPassword: loginForm.value.password
+    });
+
+
     if (res.data.code === 1) {
-      router.push({ path: '/mainDashboard' })
+      // 更新 Vuex 状态
+      store.commit('updateUserInfo', {
+        userId: res.data.data.id,
+        userName: res.data.data.userName,
+        userImg: res.data.data.userImg
+      });
+
+      // 跳转到主界面
+      router.push({ path: '/mainDashboard' });
+    } else {
+      console.log('登录失败');
     }
-    else
-      console.log('失败')
-  })
+  } catch (error) {
+    console.log('登录请求失败:', error);
+  }
 };
 
+// 重置表单
 const resetForm = () => {
-  // 重置表单逻辑
-
+  loginForm.value.username = '';
+  loginForm.value.password = '';
+  loginForm.value.code = '';
+  loginForm.value.remember = false;
+  loginForm.value.codeToken = '';
 };
-
-
 </script>
 
 <style scoped>
 .codeImg {
-
   float: right;
-
   border-radius: 3px;
-
   width: 26%;
 }
 
@@ -85,14 +104,11 @@ const resetForm = () => {
   height: 100%;
   background: #5f565e;
   background-size: 50%;
-
 }
 
 .btn-ground {
   text-align: center;
 }
-
-
 
 .title {
   text-shadow: -3px 3px 1px #5f565e;
